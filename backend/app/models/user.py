@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, Integer, String, Boolean
 from sqlalchemy.orm import relationship
 from app.core.database import Base
 
@@ -10,7 +10,8 @@ class User(Base):
     email = Column(String, unique=True, index=True, nullable=False)
     hashed_password = Column(String, nullable=False)
     profile_picture_url = Column(String, nullable=True)
-    
+    is_admin = Column(Boolean, default=False, nullable=False)
+
     total_score = Column(Integer, default=0, nullable=False)
     quizzes_completed = Column(Integer, default=0, nullable=False)
     total_correct_answers = Column(Integer, default=0, nullable=False)

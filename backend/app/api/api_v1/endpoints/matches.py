@@ -30,7 +30,7 @@ def read_matches(
             "status": match.status,
             "match_date": match.match_date,
             "stadium": match.stadium,
-            "has_quiz": match.quiz is not None and match.status == "FINISHED"
+            "has_quiz": match.quiz is not None and str(match.status).upper() == "FINISHED"
         }
         response_data.append(match_dict)
         

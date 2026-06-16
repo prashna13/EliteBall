@@ -117,8 +117,12 @@ export const AuthProvider = ({ children }) => {
     });
 
     if (response.status === 403) {
-      logout();
-      throw new Error('Session expired, please log in again.');
+      const data = await response.clone().json().catch(() => ({}));
+      // Only logout for invalid/expired tokens, not permission errors (e.g. admin-only routes)
+      if (data.detail === 'Could not validate credentials') {
+        logout();
+        throw new Error('Session expired, please log in again.');
+      }
     }
 
     return response;

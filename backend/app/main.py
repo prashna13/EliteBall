@@ -3,10 +3,10 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import settings
 from app.api.api_v1.api import api_router
-from app.core.database import Base, engine
+from app.core.database import init_db
 
-# Automatically create tables (SQLite / PostgreSQL)
-Base.metadata.create_all(bind=engine)
+# Initialize DB (safe for Supabase — does not run create_all on Postgres)
+init_db()
 
 app = FastAPI(
     title=settings.PROJECT_NAME,

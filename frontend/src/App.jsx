@@ -8,6 +8,7 @@ import Matches from './pages/Matches';
 import Quiz from './pages/Quiz';
 import Leaderboard from './pages/Leaderboard';
 import Friends from './pages/Friends';
+import Admin from './pages/Admin';
 
 // A Protected Route wrapper to prevent unauthenticated access
 const ProtectedRoute = ({ children }) => {
@@ -39,6 +40,7 @@ const AppLayout = () => {
           <Route path="/quiz/:matchId" element={<ProtectedRoute><Quiz /></ProtectedRoute>} />
           <Route path="/leaderboard" element={<ProtectedRoute><Leaderboard /></ProtectedRoute>} />
           <Route path="/friends" element={<ProtectedRoute><Friends /></ProtectedRoute>} />
+          <Route path="/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>

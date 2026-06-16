@@ -15,6 +15,7 @@ class UserLogin(BaseModel):
 
 class UserResponse(UserBase):
     id: int
+    is_admin: bool = False
     total_score: int
     quizzes_completed: int
     total_correct_answers: int

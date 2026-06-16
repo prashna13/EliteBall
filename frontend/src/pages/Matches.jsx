@@ -125,7 +125,7 @@ const Matches = () => {
                 minWidth: '70px',
                 textAlign: 'center'
               }}>
-                {match.status === 'FINISHED' ? (
+                {match.status?.toUpperCase() === 'FINISHED' ? (
                   <span style={{ fontSize: '1.4rem', fontWeight: 800, letterSpacing: '2px', color: 'var(--primary)' }}>
                     {match.home_score} - {match.away_score}
                   </span>
@@ -152,7 +152,7 @@ const Matches = () => {
 
             {/* Action Button */}
             <div>
-              {match.status === 'FINISHED' ? (
+              {match.status?.toUpperCase() === 'FINISHED' ? (
                 <button
                   onClick={() => handleStartQuiz(match.id)}
                   className="btn-primary"

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Trophy, Users, Calendar, LogOut, Award } from 'lucide-react';
+import { Trophy, Users, Calendar, LogOut, Award, Shield } from 'lucide-react';
 
 const Navbar = () => {
   const { user, logout } = useAuth();
@@ -11,6 +11,7 @@ const Navbar = () => {
   if (!user) return null;
 
   const isActive = (path) => location.pathname === path;
+  const isAdmin = !!user.is_admin;
 
   return (
     <nav className="glass-card" style={{
@@ -81,6 +82,23 @@ const Navbar = () => {
           <Users size={18} />
           Friends
         </Link>
+
+        {isAdmin && (
+          <Link to="/admin" className={`btn-secondary ${isActive('/admin') ? 'active-nav' : ''}`} style={{
+            padding: '8px 16px',
+            borderRadius: '8px',
+            fontSize: '0.9rem',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            background: isActive('/admin') ? 'rgba(139, 92, 246, 0.12)' : 'transparent',
+            borderColor: isActive('/admin') ? 'var(--secondary-glow)' : 'transparent',
+            color: isActive('/admin') ? 'var(--secondary)' : 'var(--text-secondary)'
+          }}>
+            <Shield size={18} />
+            Admin
+          </Link>
+        )}
       </div>
 
       <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>

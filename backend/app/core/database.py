@@ -27,7 +27,7 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 Base = declarative_base()
 
-SERIAL_TABLES = ("users", "matches", "quizzes", "questions", "friendships", "quiz_answers")
+SERIAL_TABLES = ("users", "matches", "quizzes", "questions", "friendships", "quiz_answers", "leagues")
 
 
 def fix_postgres_sequences() -> None:
@@ -41,6 +41,9 @@ def fix_postgres_sequences() -> None:
         with engine.begin() as conn:
             for table in SERIAL_TABLES:
                 if table not in existing_tables:
+                    continue
+                # Compound key tables like league_user do not have a standard 'id' column sequence, skip them
+                if table == "league_user":
                     continue
                 conn.execute(
                     text(
@@ -60,24 +63,26 @@ def fix_postgres_sequences() -> None:
 def ensure_schema() -> None:
     """
     Lightweight schema guard for environments without migrations.
-    Supabase/Postgres won't be altered by create_all(), so we add critical columns if missing.
+    Create new tables (leagues, league_user) and add columns if missing.
     """
     try:
-        insp = inspect(engine)
-        if "users" not in insp.get_table_names():
-            return
+        import app.models  # noqa: F401
+        Base.metadata.create_all(bind=engine)
 
-        cols = {c["name"] for c in insp.get_columns("users")}
-        if "is_admin" not in cols:
-            with engine.begin() as conn:
-                conn.execute(
-                    text("ALTER TABLE users ADD COLUMN is_admin BOOLEAN NOT NULL DEFAULT FALSE")
-                )
+        insp = inspect(engine)
+        if "users" in insp.get_table_names():
+            cols = {c["name"] for c in insp.get_columns("users")}
+            if "is_admin" not in cols:
+                with engine.begin() as conn:
+                    conn.execute(
+                        text("ALTER TABLE users ADD COLUMN is_admin BOOLEAN NOT NULL DEFAULT FALSE")
+                    )
 
         fix_postgres_sequences()
     except Exception:
         # Don't block startup if inspection fails; real errors will surface on queries.
         return
+
 
 
 def init_db() -> None:

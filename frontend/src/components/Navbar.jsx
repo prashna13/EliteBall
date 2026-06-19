@@ -83,6 +83,22 @@ const Navbar = () => {
           Friends
         </Link>
 
+        <Link to="/leagues" className={`btn-secondary ${isActive('/leagues') ? 'active-nav' : ''}`} style={{
+          padding: '8px 16px',
+          borderRadius: '8px',
+          fontSize: '0.9rem',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '8px',
+          background: isActive('/leagues') ? 'rgba(16, 185, 129, 0.1)' : 'transparent',
+          borderColor: isActive('/leagues') ? 'var(--primary-glow)' : 'transparent',
+          color: isActive('/leagues') ? 'var(--primary)' : 'var(--text-secondary)'
+        }}>
+          <Trophy size={18} />
+          Leagues
+        </Link>
+
+
         {isAdmin && (
           <Link to="/admin" className={`btn-secondary ${isActive('/admin') ? 'active-nav' : ''}`} style={{
             padding: '8px 16px',

@@ -19,4 +19,9 @@ class User(Base):
     # Relationships
     attempts = relationship("QuizAttempt", back_populates="user", cascade="all, delete-orphan")
     
+    # Leagues relationships
+    owned_leagues = relationship("League", back_populates="owner", foreign_keys="[League.owner_id]")
+    leagues = relationship("League", secondary="league_user", back_populates="members")
+    
     # We will define friendships manually or using self-referential relationships
+

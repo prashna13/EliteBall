@@ -229,3 +229,53 @@ def test_friends_workflow(client):
     friend_leaderboard = client.get("/api/v1/friends/leaderboard", headers=headers_a)
     assert len(friend_leaderboard.json()) == 2
     assert friend_leaderboard.json()[0]["username"] in ["usera", "userb"]
+
+
+def test_leagues_workflow(client):
+    # Register and Login User A
+    client.post("/api/v1/auth/register", json={"username": "leaguea", "email": "leaguea@ebk.com", "password": "password123"})
+    login_a = client.post("/api/v1/auth/login", json={"username": "leaguea", "password": "password123"})
+    headers_a = {"Authorization": f"Bearer {login_a.json()['access_token']}"}
+
+    # Register and Login User B
+    client.post("/api/v1/auth/register", json={"username": "leagueb", "email": "leagueb@ebk.com", "password": "password123"})
+    login_b = client.post("/api/v1/auth/login", json={"username": "leagueb", "password": "password123"})
+    headers_b = {"Authorization": f"Bearer {login_b.json()['access_token']}"}
+
+    # 1. User A creates a private league
+    create_resp = client.post("/api/v1/leagues/", json={"name": "Champions League"}, headers=headers_a)
+    assert create_resp.status_code == 201
+    league = create_resp.json()
+    assert league["name"] == "Champions League"
+    assert league["owner_id"] is not None
+    league_id = league["id"]
+
+    # 2. User B joins User A's league
+    join_resp = client.post("/api/v1/leagues/join", json={"name": "Champions League"}, headers=headers_b)
+    assert join_resp.status_code == 200
+
+    # 3. User A lists their leagues
+    my_leagues_resp = client.get("/api/v1/leagues/", headers=headers_a)
+    assert len(my_leagues_resp.json()) == 1
+    assert my_leagues_resp.json()[0]["name"] == "Champions League"
+
+    # 4. User A checks league details and leaderboard standings
+    details_resp = client.get(f"/api/v1/leagues/{league_id}", headers=headers_a)
+    assert details_resp.status_code == 200
+    details = details_resp.json()
+    assert len(details["members"]) == 2
+    # Members should be sorted by total_score
+    assert details["members"][0]["username"] in ["leaguea", "leagueb"]
+
+    # 5. User B leaves league
+    leave_resp = client.post(f"/api/v1/leagues/{league_id}/leave", headers=headers_b)
+    assert leave_resp.status_code == 200
+
+    # 6. User A (owner) tries to leave but gets error
+    leave_owner_resp = client.post(f"/api/v1/leagues/{league_id}/leave", headers=headers_a)
+    assert leave_owner_resp.status_code == 400
+
+    # 7. User A deletes the league
+    delete_resp = client.delete(f"/api/v1/leagues/{league_id}", headers=headers_a)
+    assert delete_resp.status_code == 200
+

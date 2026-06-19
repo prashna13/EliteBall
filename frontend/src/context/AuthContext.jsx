@@ -4,7 +4,7 @@ const AuthContext = createContext(null);
 
 export const API_URL = typeof window !== 'undefined' && window.location.hostname === 'localhost'
   ? 'http://localhost:8000/api/v1'
-  : '/_backend/api/v1';
+  : `${window.location.origin}/_backend/api/v1`;
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);

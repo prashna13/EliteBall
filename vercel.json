@@ -7,9 +7,12 @@
     },
     "backend": {
       "root": "backend",
-      "routePrefix": "/_/backend",
+      "routePrefix": "/_backend",
       "framework": "fastapi",
       "entrypoint": "app/main.py"
     }
-  }
+  },
+  "rewrites": [
+    { "source": "/_backend/(.*)", "destination": "/_backend/$1" }
+  ]
 }
